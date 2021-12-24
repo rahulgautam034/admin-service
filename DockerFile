@@ -1,0 +1,4 @@
+FROM openjdk:latest
+EXPOSE 8082
+ADD target/admin-service.jar admin-service.jar
+ENTRYPOINT ["sh", "-c", "java -jar /admin-service.jar"]
