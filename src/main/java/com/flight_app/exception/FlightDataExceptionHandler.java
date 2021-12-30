@@ -22,12 +22,12 @@ public class FlightDataExceptionHandler {
 	 */
 	@ExceptionHandler(FlightDataException.class)
 	
-	public ResponseEntity<?> handleFlightException(FlightDataException e){
+	public ResponseEntity<?> handleFlightException(final FlightDataException exception){
 		
 		ErrorResponseModel error = new ErrorResponseModel();
 		
 		error.setCode(HttpStatus.BAD_REQUEST);
-		error.setMessage(e.getMessage());
+		error.setMessage(exception.getMessage());
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 		

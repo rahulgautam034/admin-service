@@ -1,5 +1,7 @@
 package com.flight_app.ui;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,33 +17,93 @@ import lombok.Setter;
 @Setter
 public class FlightResponseModel {
 	
+	/**
+	 * flight id
+	 *
+	 */
 	private String flightId;
 	
+	/**
+	 * airLine
+	 *
+	 */
 	private String airLine;
 
+	/**
+	 * source
+	 *
+	 */
 	private String source;
 
+	/**
+	 * destination
+	 *
+	 */
 	private String destination;
 
-	private String startDate;
+	/**
+	 * startDate
+	 *
+	 */
+	private LocalDate startDate;
 
-	private String endDate;
-	
+	/**
+	 * endDate
+	 *
+	 */
+	private LocalDate endDate;
+
+	/**
+	 * startTime
+	 *
+	 */
 	private String startTime;
 
+	/**
+	 * endTime
+	 *
+	 */
 	private String endTime;
 
+	/**
+	 * instrumentUsed
+	 *
+	 */
 	private String instrumentUsed;
 
+	/**
+	 * businessClassSeats
+	 *
+	 */
 	private Integer businessClassSeats;
 
+	/**
+	 * nonBusinessClassSeats
+	 *
+	 */
 	private Integer nonBusinessClassSeats;
 
-	private float ticketCost;
+	/**
+	 * ticketCost
+	 *
+	 */
+	private long ticketCost;
 
+	/**
+	 * totalRows
+	 *
+	 */
 	private Integer totalRows;
 
-	private String meal; 
-	
+	/**
+	 * meal
+	 *
+	 */
+	private String meal;
+
+	/**
+	 * status
+	 *
+	 */
 	private String status;
 }

@@ -12,12 +12,21 @@ import lombok.extern.log4j.Log4j2;
  * AuthServiceImpl for user validation
  *
  */
+
 @Service
 @Log4j2
 public class AuthServiceImpl implements AuthService {
 
+	/**
+	 * user repository
+	 *
+	 */
 	public final UserRepository userRepository;
 
+	/**
+	 * class all args constructor
+	 *
+	 */
 	public AuthServiceImpl(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
@@ -27,16 +36,12 @@ public class AuthServiceImpl implements AuthService {
 	 *
 	 */
 	@Override
-	public AuthEntity validateUser(AuthDTO authDTO) {
+	public AuthEntity validateUser(final AuthDTO authDTO) {
 		log.info("called validateUser");
-		AuthEntity user = userRepository.findByUserName(authDTO.getUserName());
+		final AuthEntity user = userRepository.findByUserName(authDTO.getUserName());
 
-		if (user != null) {
-			if (user.getPassword().equals(authDTO.getPassword())) {
-				return user;
-			} else {
-				return null;
-			}
+		if (user != null && user.getPassword().equals(authDTO.getPassword())) {
+			return user;
 		} else {
 			return null;
 

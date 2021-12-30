@@ -23,13 +23,27 @@ import lombok.extern.log4j.Log4j2;
  * JWTUserDetailsService get and set the users
  *
  */
+
 @Service
 @Log4j2
 public class JWTUserDetailsService implements UserDetailsService {
 
+	/**
+	 * user repository
+	 *
+	 */
 	private final UserRepository userRepository;
+	
+	/**
+	 * model mapper bean
+	 *
+	 */
 	private final ModelMapper modelMapper;
 
+	/**
+	 * all argument constructor
+	 *
+	 */
 	public JWTUserDetailsService(UserRepository userRepository, ModelMapper modelMapper) {
 		this.userRepository = userRepository;
 		this.modelMapper = modelMapper;
@@ -40,10 +54,10 @@ public class JWTUserDetailsService implements UserDetailsService {
 	 *
 	 */
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
 		log.info("called loadUserByUsername");
 
-		AuthEntity user = userRepository.findByUserName(username);
+		final AuthEntity user = userRepository.findByUserName(username);
 		if (user != null) {
 			return new User(user.getUserName(), bcryptPassword(user.getPassword()), new ArrayList<>());
 		} else {
@@ -57,9 +71,9 @@ public class JWTUserDetailsService implements UserDetailsService {
 	 *
 	 */
 
-	public static String bcryptPassword(String password) {
+	public static String bcryptPassword(final String password) {
 		log.info("called bcryptPassword");
-		PasswordEncoder encoder = new BCryptPasswordEncoder();
+		final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
 		return encoder.encode(password);
 	}
@@ -68,11 +82,10 @@ public class JWTUserDetailsService implements UserDetailsService {
 	 * find user from DB
 	 *
 	 */
-	public UserDto findUser(String userName) {
+	public UserDto findUser(final String userName) {
 		log.info("called findUser");
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		AuthEntity user = userRepository.findByUserName(userName);
-		log.info("user ************"+user);
+		final AuthEntity user = userRepository.findByUserName(userName);
 		if (user != null) {
 			return modelMapper.map(user, UserDto.class);
 		} else {

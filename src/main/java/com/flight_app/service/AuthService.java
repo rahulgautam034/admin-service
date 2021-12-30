@@ -9,6 +9,10 @@ import com.flight_app.entities.AuthEntity;
  */
 public interface AuthService {
 
-	public AuthEntity validateUser(AuthDTO user);
+	/**
+	 * validate user
+	 *
+	 */
+	AuthEntity validateUser(AuthDTO user);
 
 }

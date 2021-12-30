@@ -20,18 +20,34 @@ import lombok.Setter;
 @DynamoDBTable(tableName = "user1")
 public class AuthEntity {
 
+	/**
+	 * first name
+	 */
 	@DynamoDBAttribute
+	
 	private String firstName;
 
+	/**
+	 * last name
+	 */
 	@DynamoDBAttribute
 	private String lastName;
 
+	/**
+	 * role
+	 */
 	@DynamoDBAttribute
 	private String role;
 
+	/**
+	 * user name
+	 */
 	@DynamoDBHashKey
 	private String userName;
 
+	/**
+	 * password
+	 */
 	@DynamoDBAttribute
 	private String password;
 

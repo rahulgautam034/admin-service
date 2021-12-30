@@ -15,9 +15,17 @@ import com.flight_app.entities.AuthEntity;
 
 public class UserRepository {
 
+	/**
+	 * dynamoDb mapper bean
+	 *
+	 */
 	private final DynamoDBMapper dynamoDBMapper;
 
-	public UserRepository(DynamoDBMapper dynamoDBMapper) {
+	/**
+	 * constructor call 
+	 *
+	 */
+	public UserRepository(final DynamoDBMapper dynamoDBMapper) {
 		this.dynamoDBMapper = dynamoDBMapper;
 	}
 
@@ -27,7 +35,7 @@ public class UserRepository {
 	 * @param userName
 	 *
 	 */
-	public AuthEntity findByUserName(String userName) {
+	public AuthEntity findByUserName(final String userName) {
 		return dynamoDBMapper.load(AuthEntity.class, userName,
 				new DynamoDBMapperConfig(DynamoDBMapperConfig.ConsistentReads.CONSISTENT));
 	}

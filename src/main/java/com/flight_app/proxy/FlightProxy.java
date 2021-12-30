@@ -26,7 +26,7 @@ public interface FlightProxy {
 	 * @return
 	 */
 	@PostMapping("/airline/inventory/add")
-	public FlightDto addFlight(@RequestBody FlightDto flightDto);
+	FlightDto addFlight(@RequestBody FlightDto flightDto);
 
 	/**
 	 * block flight

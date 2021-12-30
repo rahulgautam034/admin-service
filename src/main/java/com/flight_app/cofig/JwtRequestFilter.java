@@ -31,7 +31,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 	private final JwtTokenUtil jwtTokenUtil;
 
-	public JwtRequestFilter(JWTUserDetailsService jwtUserDetailsService, JwtTokenUtil jwtTokenUtil) {
+	/**
+	 * constructor
+	 *
+	 */
+	public JwtRequestFilter(final JWTUserDetailsService jwtUserDetailsService, final JwtTokenUtil jwtTokenUtil) {
 		this.jwtUserDetailsService = jwtUserDetailsService;
 		this.jwtTokenUtil = jwtTokenUtil;
 	}
@@ -40,7 +44,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	/**
 	 * filter bearer token
 	 */
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain)
 			throws ServletException, IOException {
 		log.info("called doFilterInternal");
 		final String requestTokenHeader = request.getHeader("Authorization");
@@ -71,7 +75,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			// authentication
 			if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
 
-				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+				final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
 				usernamePasswordAuthenticationToken
 						.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

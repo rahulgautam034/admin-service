@@ -28,23 +28,40 @@ import lombok.extern.log4j.Log4j2;
  * for authentication & validation
  *
  */
+
+
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/admin/")
 @Log4j2
 public class JwtAuthenticationController {
 
-	private final AuthenticationManager authenticationManager;
-
+	/**
+	 * authentication manager
+	 *
+	 */
+	private final AuthenticationManager authManager;
+	/**
+	 * token util bean for token validation
+	 *
+	 */
 	private final JwtTokenUtil jwtTokenUtil;
 
-	private final JWTUserDetailsService userDetailsService;
+	/**
+	 * service class
+	 *
+	 */
+	private final JWTUserDetailsService userService;
 
-	public JwtAuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
-			JWTUserDetailsService userDetailsService) {
-		this.authenticationManager = authenticationManager;
+	/**
+	 *constructor
+	 *
+	 */
+	public JwtAuthenticationController(final AuthenticationManager authManager, final JwtTokenUtil jwtTokenUtil,
+			final JWTUserDetailsService userService) {
+		this.authManager = authManager;
 		this.jwtTokenUtil = jwtTokenUtil;
-		this.userDetailsService = userDetailsService;
+		this.userService = userService;
 	}
 
 	/**
@@ -52,12 +69,12 @@ public class JwtAuthenticationController {
 	 *
 	 */
 	@RequestMapping(value = "authenticate", method = RequestMethod.POST)
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+	public ResponseEntity<?> createAuthenticationToken(@RequestBody final JwtRequest jwtRequest) throws Exception {
 		log.info("started createAuthenticationToken **");
 
-		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+		authenticate(jwtRequest.getUsername(), jwtRequest.getPassword());
 
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+		final UserDetails userDetails = userService.loadUserByUsername(jwtRequest.getUsername());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
 
@@ -68,10 +85,10 @@ public class JwtAuthenticationController {
 	 * internal authentication by authentication manager
 	 *
 	 */
-	private void authenticate(String username, String password) throws Exception {
+	private void authenticate(final String username, final String password) throws Exception {
 		log.info("started authenticate **");
 		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+			authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 		} catch (DisabledException e) {
 			throw new RuntimeException("USER_DISABLED", e);
 		} catch (BadCredentialsException e) {
@@ -84,9 +101,9 @@ public class JwtAuthenticationController {
 	 *
 	 */
 	@GetMapping("user/{userName}")
-	public ResponseEntity<UserDto> getCurrentLoggedInUser(@PathVariable String userName) {
+	public ResponseEntity<UserDto> getCurrentLoggedInUser(@PathVariable final String userName) {
 		log.info("started getCurrentLoggedInUser **");
-		UserDto userDto = userDetailsService.findUser(userName);
+		final UserDto userDto = userService.findUser(userName);
 
 		return ResponseEntity.status(HttpStatus.OK).body(userDto);
 	}

@@ -9,14 +9,23 @@ import lombok.Setter;
  * AuthDTO
  *
  */
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class AuthDTO {
 
+	/**
+	 * user name
+	 *
+	 */
 	private String userName;
 
+	/**
+	 * password
+	 *
+	 */
 	private String password;
 
 }

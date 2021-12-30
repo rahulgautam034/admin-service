@@ -21,6 +21,7 @@ import lombok.extern.log4j.Log4j2;
  * WebSecurityConfig for api's authorization
  *
  */
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -33,6 +34,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final JwtRequestFilter jwtRequestFilter;
 
+	/**
+	 * class params constructor
+	 *
+	 */
 	public WebSecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
 			UserDetailsService jwtUserDetailsService, JwtRequestFilter jwtRequestFilter) {
 		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;

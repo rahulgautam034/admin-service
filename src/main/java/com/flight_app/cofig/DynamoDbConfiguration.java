@@ -1,13 +1,14 @@
 package com.flight_app.cofig;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * AWS dynamoDB database configuration
@@ -15,7 +16,14 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class DynamoDbConfiguration {
-	
+
+	/**
+	 * no args constructor
+	 *
+	 */
+	public DynamoDbConfiguration() {
+	}
+
 	/**
 	 * dynamodb mapper used for repository
 	 */
@@ -24,11 +32,10 @@ public class DynamoDbConfiguration {
 		return new DynamoDBMapper(buildAmazonDynamoDB());
 	}
 
-	
 	private AmazonDynamoDB buildAmazonDynamoDB() {
 		return AmazonDynamoDBClientBuilder.standard()
-				.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
-						"dynamodb.us-east-2.amazonaws.com", "us-east-2"))
+				.withEndpointConfiguration(
+						new AwsClientBuilder.EndpointConfiguration("dynamodb.us-east-2.amazonaws.com", "us-east-2"))
 				.withCredentials(new AWSStaticCredentialsProvider(
 						new BasicAWSCredentials("AKIAUROAFDDNEQ3RFELI", "nw9BSN9A/pmzP0UouC32zNqNuzUxDNXlfSOh4Wlo")))
 				.build();
