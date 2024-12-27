@@ -3,6 +3,7 @@ package com.flight_app.service;
 
 import java.util.ArrayList;
 
+import com.flight_app.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.security.core.userdetails.User;
@@ -13,7 +14,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.flight_app.dao.UserRepository;
 import com.flight_app.dto.UserDto;
 import com.flight_app.entities.AuthEntity;
 

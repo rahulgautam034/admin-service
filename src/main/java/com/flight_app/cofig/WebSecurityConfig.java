@@ -1,102 +1,96 @@
 package com.flight_app.cofig;
 
+import com.flight_app.service.JWTUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 import lombok.extern.log4j.Log4j2;
-
-/**
- * WebSecurityConfig for api's authorization
- *
- */
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Log4j2
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableMethodSecurity
+public class WebSecurityConfig {
 
-	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-	private final UserDetailsService jwtUserDetailsService;
-
-	private final JwtRequestFilter jwtRequestFilter;
-
-	/**
-	 * class params constructor
-	 *
-	 */
-	public WebSecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-			UserDetailsService jwtUserDetailsService, JwtRequestFilter jwtRequestFilter) {
-		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-		this.jwtUserDetailsService = jwtUserDetailsService;
-		this.jwtRequestFilter = jwtRequestFilter;
-	}
-
-	/**
-	 * configure AuthenticationManager so that it knows from where to load user for
-	 * matching credentials Use BCryptPasswordEncoder
-	 * 
-	 * @param auth
-	 * @throws Exception
-	 */
 	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		log.info("configureGlobal called");
-		auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
-	}
+	private JWTUserDetailsService jwtUserDetailsService;
 
-	/**
-	 * encode the plain text password into encrypted
-	 */
+//	@Bean
+//	public UserDetailsService userDetailsService() {
+//		return new InMemoryUserDetailsManager(
+//				User.withUsername("user")
+//						.password(passwordEncoder().encode("password"))
+//						.roles("USER")
+//						.build(),
+//				User.withUsername("admin")
+//						.password(passwordEncoder().encode("admin"))
+//						.roles("ADMIN")
+//						.build()
+//		);
+//	}
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		log.info("passwordEncoder called");
 		return new BCryptPasswordEncoder();
 	}
 
-	/**
-	 * authenticationManagerBean
-	 */
 	@Bean
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		log.info("authenticationManagerBean called");
-		return super.authenticationManagerBean();
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
+		// Define which requests require authentication and authorization
+		http.
+				cors(Customizer.withDefaults())
+				.csrf(AbstractHttpConfigurer::disable)// CSRF protection is disabled for simplicity, reconsider enabling it in production
+				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers("/api/admin/authenticate").permitAll()       // Public endpoints that don't require authentication
+						.anyRequest().authenticated()                    // All other requests require authentication
+				)
+				.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+				.formLogin(form -> form
+						.loginPage("/login")                             // Custom login page
+						.permitAll()                                     // Allow anyone to access the login page
+				)
+				.logout(LogoutConfigurer::permitAll                                     // Allow logout without restriction
+				);
+
+		return http.build(); // Return the configured SecurityFilterChain
 	}
 
-	/**
-	 * configure
-	 */
-	@Override
-	
-	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		log.info("configure called");
-		// We don't need CSRF for this example
-		httpSecurity.csrf().disable()
-				// dont authenticate this particular request
-				.authorizeRequests().antMatchers("/api/admin/authenticate").permitAll().
-				// all other requests need to be authenticated
-				anyRequest().authenticated().and().
-				// make sure we use stateless session; session won't be used to
-				// store user's state.
-				exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	// AuthenticationManager for custom user details service and password encoding
+	@Bean
+	public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+		AuthenticationManagerBuilder authManagerBuilder =
+				http.getSharedObject(AuthenticationManagerBuilder.class);
 
-		// Add a filter to validate the tokens with every request
-		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-		httpSecurity.cors();
+		// Configure custom UserDetailsService and password encoder
+		authManagerBuilder
+				.userDetailsService(jwtUserDetailsService)
+				.passwordEncoder(passwordEncoder());
+
+		return authManagerBuilder.build(); // Build and return the AuthenticationManager
 	}
+
+
 }

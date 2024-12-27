@@ -1,8 +1,8 @@
 package com.flight_app.service;
 
+import com.flight_app.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import com.flight_app.dao.UserRepository;
 import com.flight_app.dto.AuthDTO;
 import com.flight_app.entities.AuthEntity;
 
